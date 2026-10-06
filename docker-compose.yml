@@ -17,6 +17,8 @@ services:
     environment:
       DATABASE_URL: postgresql://rag:rag@db:5432/rag
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-openai/gpt-4o-mini}
     ports:
       - "8000:8000"
     volumes:

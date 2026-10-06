@@ -14,7 +14,19 @@ curl -X POST localhost:8000/chat -H 'Content-Type: application/json' \
   -d '{"question":"What is pgvector?","top_k":3}'
 ```
 
-Không có `OPENAI_API_KEY` vẫn chạy demo mode (hash embedding + echo best match).
+Không có key vẫn chạy demo mode (hash embedding + echo best match).
+
+## LLM qua gateway OpenAI-compatible (OpenRouter / 9router)
+
+```bash
+# .env (file này gitignored, không commit key)
+OPENROUTER_API_KEY=sk-...
+OPENROUTER_BASE_URL=http://HOST:PORT/v1
+LLM_MODEL=ag/gemini-3.8-flash-medium
+```
+
+Retrieval dùng hash embedding local 32-dim (gateway thường không có
+embedding credentials), còn `/chat` gọi LLM thật qua `base_url`.
 
 ## Local dev (không docker)
 
