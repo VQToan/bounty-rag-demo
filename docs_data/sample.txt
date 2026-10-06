@@ -1,0 +1,4 @@
+pgvector is a Postgres extension for vector similarity search.
+It stores embeddings and answers top-k cosine queries with the <=> operator.
+This demo uses pgvector + FastAPI + LangChain to build a /chat RAG endpoint.
+Re-running ingest is idempotent: same file + chunk index = same id, ON CONFLICT updates.
