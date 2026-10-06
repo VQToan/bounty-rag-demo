@@ -4,7 +4,7 @@ Job: ~022074538924076543007 — 50+ proposals, cần nổi bật bằng demo ch�
 ---
 Hi, I built this exact thing last week — FastAPI + Postgres pgvector + LangChain RAG with one-command docker-compose.
 
-Demo repo: [PASTE GITHUB LINK]/bounty
+Demo repo: https://github.com/VQToan/bounty-rag-demo
 - `docker compose up --build` -> api :8000 + db pgvector:pg16
 - `docker compose exec api python -m app.ingest docs_data` (txt/pdf, chunk 500/50, idempotent ON CONFLICT)
 - `POST /chat {question, top_k}` -> `{answer, sources:[{content, score}]}` via `1 - (embedding <=> query)` cosine + LangChain ChatOpenAI, fallback stub if no key
@@ -45,3 +45,23 @@ Available now, overlap US hours. What is the first test task?
 50-60s: "For you I swap in your docs, HNSW index, your embedding model, deliver in 2-3 days. Happy to start with a $20 test milestone."
 
 Gửi kèm 1 ảnh architecture: docs -> chunk -> embed -> pgvector <=> -> top-k -> LLM -> JSON.
+
+# Proposal 3 — AI developer for SaaS bug fixes (76 bugs, $13-30/h)
+Job: ~022088224130445976533 — 20-50 proposals, Entry level, <1 month, <30h/tuần. Khách cần fix không chạm live.
+
+---
+Hi, I specialize in exactly this: triaging long bug backlogs without breaking production — Python + Node.js + API, with InfoSec + DevOps background.
+
+How I'd clear your 76 bugs:
+1. Triage 2h đầu: phân loại crash / API / data / UI, đánh P0-P2, chọn 5 bug P0 làm trước để bạn thấy tiến độ ngày 1.
+2. Reproduce mỗi bug bằng script/test nhỏ trước khi fix (pytest), fix trên branch staging, không động live.
+3. Mỗi fix kèm: root cause 1 dòng + test + rollback note. Gửi batch 5-10 bugs/lần để bạn review nhanh.
+4. Cuối: checklist 76 bugs + regression run.
+
+Proof I work systematically: https://github.com/VQToan/bounty-rag-demo — FastAPI + pgvector + Docker, pytest 5 passed, README 15-min run. I bring same discipline to your SaaS.
+
+Rate $30/h (trong range $13-30 của bạn ở mức senior nhưng làm nhanh), start today, update daily async. Share repo/staging access? I’ll send back first 5 fixes in 48h.
+
+— Toan, Senior Software Engineer | Full-Stack & AI (Python/FastAPI/Next.js/PostgreSQL/Docker)
+---
+
