@@ -1,8 +1,10 @@
-$ docker compose up --build
-$ curl localhost:8001/health
-{"status":"ok"}
-$ curl -X POST localhost:8001/chat
-{"answer":"No indexed documents yet. Run: python -m app.ingest docs_data","sources":[]}
-$ ./scripts/demo.sh (5 passed)
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-5 passed, 1 warning in 0.20s
+$ docker run pgvector:pg16 -p 5433:5432        [OK]
+$ python -m app.ingest docs_data
+[ingest] done: 1 files from docs_data
+$ curl localhost:8002/health
+{"status": "ok"}
+$ curl -X POST localhost:8002/chat -d '{"question":"What is pgvector?"}'
+{"answer": "(demo) Best match: pgvector is a Postgres
+  extension for vector similarity search...",
+ "sources": [{"score": 0.39, "content": "pgvector is a Postgres..."}]}
+sources: 1  |  pytest: 5 passed
