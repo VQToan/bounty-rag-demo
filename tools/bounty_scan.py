@@ -61,31 +61,37 @@ def main():
     queries = [
         "Bounty in:title state:open",  # $ filtered in Python ($ breaks search syntax)
         "Paid in:title state:open",
+        "label:bounty state:open",  # repos tagging bounty via labels
+        "bounty language:typescript state:open",  # $-less mentions in stack langs
+        "bounty language:python state:open",
     ]
-    seen, cands = set(), []
-    for q in queries:
+    seen, cands, watch = set(), [], []
+    for qi, q in enumerate(queries):
         for it in search(q):
             key = (it["repository_url"], it["number"])
             if key in seen:
                 continue
             seen.add(key)
             m = AMOUNT_RE.search(it["title"] or "")
+            created = datetime.fromisoformat(it["created_at"].replace("Z", "+00:00"))
+            age_days = (datetime.now(timezone.utc) - created).days
+            if age_days > a.days:
+                continue
+            repo = "/".join(it["repository_url"].rstrip("/").split("/")[-2:])
+            base = {"repo": repo, "num": it["number"], "title": it["title"],
+                    "created": str(created.date()), "age": age_days,
+                    "comments": it["comments"],
+                    "url": it["html_url"]}
             if not m:
+                if qi >= 2 and not BOT_RE.search(it["title"] or ""):  # $-less label/lang hits
+                    watch.append(base)
                 continue
             amount = int(m.group(1).replace(",", ""))
             if not (a.min <= amount <= a.max):
                 continue
             if BOT_RE.search(it["title"] or ""):
                 continue
-            created = datetime.fromisoformat(it["created_at"].replace("Z", "+00:00"))
-            age_days = (datetime.now(timezone.utc) - created).days
-            if age_days > a.days:
-                continue
-            repo = "/".join(it["repository_url"].rstrip("/").split("/")[-2:])
-            cands.append({"repo": repo, "num": it["number"], "title": it["title"],
-                          "created": str(created.date()), "age": age_days,
-                          "comments": it["comments"], "amount": amount,
-                          "url": it["html_url"]})
+            cands.append({**base, "amount": amount})
 
     cache, rows = {}, []
     for c in cands[:25]:
@@ -127,7 +133,13 @@ def main():
         lines.append(f"| {r['amount']} | {r['repo']} | [#{r['num']}]({r['url']}) {r['title'][:60]} "
                      f"| {r['age']}d | {r['stars']} | {r['repo_age']}d | {r['lang']} "
                      f"| {r['comments']} | {r['score']} | {r['flags']} |")
-    lines += ["", "_Rule: only work after maintainer confirms funding in comments._"]
+    lines += ["", "_Rule: only work after maintainer confirms funding in comments._", "",
+              f"## Watchlist: bounty-labeled / stack mentions without $ ({len(watch[:15])} shown)",
+              "", "| repo | issue | age | cmt |",
+              "|---|---|---|---|"]
+    for w in watch[:15]:
+        lines.append(f"| {w['repo']} | [#{w['num']}]({w['url']}) {w['title'][:60]} "
+                     f"| {w['age']}d | {w['comments']} |")
     import os
     os.makedirs(a.out, exist_ok=True)
     path = f"{a.out}/bounty-scan-{date.today()}.md"
