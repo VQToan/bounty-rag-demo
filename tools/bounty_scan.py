@@ -64,6 +64,9 @@ def main():
         "label:bounty state:open",  # repos tagging bounty via labels
         "bounty language:typescript state:open",  # $-less mentions in stack langs
         "bounty language:python state:open",
+        "reward in:title state:open",  # alternative payout wording
+        "USDC in:title state:open",  # crypto payouts
+        "USDT in:title state:open",
     ]
     seen, cands, watch = set(), [], []
     for qi, q in enumerate(queries):
@@ -125,6 +128,15 @@ def main():
         rows.append({**c, "stars": stars, "repo_age": repo_age, "lang": lang,
                      "score": score, "flags": ",".join(flags) or "-"})
     rows.sort(key=lambda r: -r["score"])
+    # Anti-flood: max 3 rows per org so one farm can't own the board
+    capped, seen_org = [], {}
+    for r in rows:
+        org = r["repo"].split("/")[0]
+        if seen_org.get(org, 0) >= 3:
+            continue
+        seen_org[org] = seen_org.get(org, 0) + 1
+        capped.append(r)
+    rows = capped
 
     lines = [f"# Bounty scan {date.today()} ({len(rows)} candidates)",
              "", "| $ | repo | issue | age | stars | org age | lang | cmt | score | flags |",
